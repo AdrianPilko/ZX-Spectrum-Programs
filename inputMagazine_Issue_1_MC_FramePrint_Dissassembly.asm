@@ -32,6 +32,7 @@ ERROR":STOP
 ;; This is my best guess at disassembly and is not clear if correct or not
 ;; (as per convention prefix $ means number is hex, otherwise is decimal)
 
+;address 32400
 	jr 55             ; 24, 55   ;; this is a good inidication the next 55 bytes are data
 	1,                           ;; there's a pattern of 22, 0, 0 followed by 3 numbers repeating
 	22,0,0,         ; 
@@ -54,7 +55,7 @@ ERROR":STOP
 	159,160,161,
 
     ;; It's important where this code is in memory, and that's setup by the BASIC routine that
-	;; loads the DATA statements - the cMachine code is placed at 32400 if the PEEK 23733 returns 127 
+	;; loads the DATA statements - the Machine code is placed at 32400 if the PEEK 23733 returns 127 
 	;; and it sets BASIC variable Z to 0. This is critical because if you read the rest of the text and
 	;; the BASIC code it's clear that thie default routine below is written to run on a 16K ZX Spectrum
 	;; the BASIC code has some more POKE's which change the machine code after it's been read from
@@ -67,7 +68,7 @@ ERROR":STOP
 	ld a, ($7e92)    ;58,146,126   ;; 58 dec = 3A hex =  ld a,(nn), byte order reverse to 126 146 = 7e92 = 32402
 	cp 1             ;254,1        ;; 254 dec = FE hex= cp n 
 	ld bc, $0012     ;1,18,0,      ;; 1 = ld bc, nn, reverse byte order 00 18 decimal = 0012 hex
-	jr z, 8,         ;40,8         ;; 40 decimal = 28 hex = jr z, d  (d is signed integer in this case 8)
+	jr z, 8          ;40,8         ;; 40 decimal = 28 hex = jr z, d  (d is signed integer in this case 8)
 	jr c, 4          ;56,4         ;; 56decimal = 38hex = jr c, d (d is signed integer in this case 4)
 
 	                               ;; now we get to 203 decimal which is CB hex, and is a 2 byte opcode
@@ -88,13 +89,14 @@ ERROR":STOP
 	ld (ix+7),a      ;221,119,7
 	inc a            ;60
     ld (ix+13),a     ;221,119,13
-	ld a,($5c88)     ;58, 136,92,  reverse byte order 92,136 becomes $5c88
+	ld a,($5c88)     ;58, 136,92,  reverse byte order 92,136 becomes $5c88. ->  23688 in decimal
 	ld b,a           ;71
 	ld a, 33         ;62,33.     I'm assuming 33 is the offset to the next screen line 32 wide??
 	sub b            ;144 
 	ld (ix+2),a      ;221,119,2,
     ld (ix+8),a      ;221,119,8
 	ld (ix+14),a     ;221,119,14
+
 	push ix          ;221,229
 	ld a, 2          ;62,2
 	call $1601       ;205,1,22    -> call nn,  ,1,22  becomes 22,1 -> $1601 this is ROM code 'CHAN-OPEN' SUBROUTINE
@@ -103,4 +105,3 @@ ERROR":STOP
 	ld bc, $0012     ;1,18,0 -> ld bc, nn 18,0 reversed and in hex is 0012
 	call $203c       ;205,  60,32 -> 32,60 -> $203c  ROM subroutine to print to the screen
 	ret              ;201, as per any machine code subroutine call ret to return to BASIC
-
