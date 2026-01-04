@@ -13,8 +13,10 @@
 ;160 DATA 1,22,209,1,18,0,205,60,32,201,9913
 
 ;; making use of https://clrhome.org/table/ to manually disassemble
+;; also reference to http://www.primrosebank.net/computers/zxspectrum/docs/CompleteSpectrumROMDisassemblyThe.pdf
 
 ;; This is my best guess at disassembly and is not clear if correct or not
+;; (as per convention prefix $ means number is hex, otherwise is decimal)
 
 	jr 55             ; 24, 55   ;; this is a good inidication the next 55 bytes are data
 	1,                           ;; there's a pattern of 22, 0, 0 followed by 3 numbers repeating
@@ -51,9 +53,29 @@
 	 								;; $7e93 hex = 32403
 	add ix, bc       ;221,9         ;; again 221=dd, from that table 9 is add ix, bc
 					 
-					 ;58,137,92,71,62,24,144,221,
-;119,1,60,221,119,7,60,221,119,13,58
-;150 DATA 136,92,71,62,33,144,221,119,2,
-;221, 119,8,221,119,14,221,229,62,2,205
-;160 DATA 1,22,209,1,18,0,205,60,32,201,
+	ld a, ($5c89)    ;58,137,92    ;; as before 2 byte operand load a with value at $5c89 (reverse byte order) 
+	
+	ld b,a           ;71
+	ld a, 24         ;62,24
+	sub b            ;144
+	ld (ix+1),a      ;221,119, 1    221 = dd -> lookup from dd table 119decimal -> 77hex 
+	inc a            ;60.         (NOTE- these ix instructions are used to index a table plus offset)
+	ld (ix+7),a      ;221,119,7
+	inc a            ;60
+    ld (ix+13),a     ;221,119,13
+	ld a,($5c88)     ;58, 136,92,  reverse byte order 92,136 becomes $5c88
+	ld b,a           ;71
+	ld a, 33         ;62,33
+	sub b            ;144 
+	ld (ix+2),a      ;221,119,2,
+    ld (ix+8),a      ;221,119,8
+	ld (ix+14),a     ;221,119,14
+	push ix          ;221,229
+	ld a, 2          ;62,2
+	call $1601       ;205,1,22    -> call nn,  ,1,22  becomes 22,1 -> $1601 this is ROM code 'CHAN-OPEN' SUBROUTINE
+					 ; where the value of register a is the stream number - as far as I can tell this is the screen
+	pop de           ;209. clearly setting de register with the previously pushed ix register
+	ld bc, $0012     ;1,18,0 -> ld bc, nn 18,0 reversed and in hex is 0012
+	call $203c       ;205,  60,32 -> 32,60 -> $203c  ROM subroutine to print to the screen
+	ret              ;201, as per any machine code subroutine call ret to return to BASIC
 
