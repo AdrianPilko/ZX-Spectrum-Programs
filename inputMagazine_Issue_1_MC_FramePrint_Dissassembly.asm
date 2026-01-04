@@ -90,9 +90,12 @@ ERROR":STOP
 	inc a            ;60
     ld (ix+13),a     ;221,119,13
 	ld a,($5c88)     ;58, 136,92,  reverse byte order 92,136 becomes $5c88. ->  23688 in decimal
+					 ;memory address 23688 (hexadecimal &5C88) holds a system variable named SPOSN, 
+					 ;which stores the current column number for the PRINT position. 
+
 	ld b,a           ;71
-	ld a, 33         ;62,33.     I'm assuming 33 is the offset to the next screen line 32 wide??
-	sub b            ;144 
+	ld a, 33         ;62,33          ;; I'm assuming 33 is the offset to the next screen line 32 wide??
+	sub b            ;144            ;; calculating the column
 	ld (ix+2),a      ;221,119,2,
     ld (ix+8),a      ;221,119,8
 	ld (ix+14),a     ;221,119,14
