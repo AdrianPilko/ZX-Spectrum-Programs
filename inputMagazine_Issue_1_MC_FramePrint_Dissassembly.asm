@@ -37,7 +37,7 @@
 	22,0,0,
 	159,160,161,
 	;;; 159,169,161 is the last of the repeating pattern, and aligns with jump relative 55
-	ld a, ($7e92)      ;58,146,126   ;; 58 dec = 3A hex =  ld a,(nn), byte order reverse to 126 146 = 7e92 = 32402
+	ld a, ($7e92)    ;58,146,126   ;; 58 dec = 3A hex =  ld a,(nn), byte order reverse to 126 146 = 7e92 = 32402
 	cp 1             ;254,1        ;; 254 dec = FE hex= cp n 
 	ld bc, $0012     ;1,18,0,      ;; 1 = ld bc, nn, reverse byte order 00 18 decimal = 0012 hex
 	jr z, 8,         ;40,8         ;; 40 decimal = 28 hex = jr z, d  (d is signed integer in this case 8)
